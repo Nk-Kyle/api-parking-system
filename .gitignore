@@ -21,3 +21,5 @@
 go.work
 
 *.env
+
+serviceAccount.json

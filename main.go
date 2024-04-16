@@ -1,6 +1,8 @@
 package main
 
 import (
+	"api-parking-system/gcs"
+	"api-parking-system/handlers/images"
 	"api-parking-system/handlers/users"
 	"api-parking-system/mongodb"
 	"api-parking-system/utils"
@@ -15,10 +17,14 @@ func init() {
 
 	mongodb.ConnectDB()
 	mongodb.InitCollections()
+
+	// Connect to GCS
+	gcs.ConnectStorage()
 }
 
 func main() {
 	defer mongodb.Client.Disconnect(mongodb.Context)
+	defer gcs.StorageClient.Close()
 
 	// Start the server
 	router := gin.Default()
@@ -29,6 +35,8 @@ func main() {
 			"message": "API is up and running!",
 		})
 	})
+
+	router.POST("/upload", images.Upload)
 
 	auth := router.Group("/auth")
 	{
