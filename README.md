@@ -21,6 +21,13 @@ There are multiple environment variables that need to be setup in .env files
 4. Utility:
     - JWT_SECRET: Jwt secret for signing jwt
 
+### Connecting to GCP Environment
+
+To connect to GCP, service account authentication is needed.
+
+1. Download serviceAccount.json from GCP
+2. Set GOOGLE_APPLICATION_CREDENTIALS_DEV as service account path locally, preferably in secrets/ folder
+
 ## Deployment To GCP
 
 ### Setup GCP
@@ -53,6 +60,19 @@ To upload to GCP we need to authenticate
 
     - **TAG** should be of form **[MAJOR]:[MINOR]**
     - **.** describes the location of the Dockerfile
+
+### Dev: Running Dockerfile locally
+
+1. Setup Env file and serviceAccount.json as in [Running Locally]
+2. Run dockerfile:
+
+    ```
+    docker run --env-file .env -p 8080:8080 -v ${pwd}/secrets:/secrets go-parking-system:$TAG
+    ```
+
+    - --env-file to load environment variables from file (when running container, can ignore Error loading .env file error)
+    - -p forwards port 8080 from host to 8080 in container
+    - -v attaches volume from host (i.e. secrets folder) to secrets in container
 
 ### Pushing to Artifact Registry
 
