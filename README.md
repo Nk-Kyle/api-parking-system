@@ -18,6 +18,8 @@ There are multiple environment variables that need to be setup in .env files
 3. Environment:
     - ENV: Set DEV for development environment
     - GOOGLE_APPLICATION_CREDENTIALS_DEV : Used for authorization to GCS with service account key, fill in service account .json file location
+4. Utility:
+    - JWT_SECRET: Jwt secret for signing jwt
 
 ## Deployment To GCP
 

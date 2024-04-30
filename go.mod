@@ -6,10 +6,12 @@ require (
 	cloud.google.com/go/storage v1.40.0
 	github.com/gin-contrib/cors v1.7.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
 	go.mongodb.org/mongo-driver v1.14.0
 	golang.org/x/crypto v0.21.0
+	google.golang.org/api v0.170.0
 )
 
 require (
@@ -65,7 +67,6 @@ require (
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/api v0.170.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240314234333-6e1732d8331c // indirect

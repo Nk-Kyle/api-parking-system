@@ -2,8 +2,8 @@ package main
 
 import (
 	"api-parking-system/gcs"
+	auth_handler "api-parking-system/handlers/auth"
 	"api-parking-system/handlers/images"
-	"api-parking-system/handlers/users"
 	"api-parking-system/mongodb"
 	"api-parking-system/utils"
 	"net/http"
@@ -40,7 +40,8 @@ func main() {
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/register", users.Register)
+		auth.POST("/register", auth_handler.Register)
+		auth.POST("/login", auth_handler.Login)
 	}
 
 	router.Run(":8080")

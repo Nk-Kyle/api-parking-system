@@ -1,4 +1,4 @@
-package users
+package auth
 
 import (
 	"api-parking-system/models"
@@ -35,7 +35,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	doc, err := repository.GetUserByEmail(body.Email)
+	doc, err := repository.GetUserByEmailorNik(body.Email, body.Nik)
 	if doc != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Email has been taken!",
@@ -55,9 +55,10 @@ func Register(c *gin.Context) {
 	}
 
 	user := &models.User{
-		Username: body.Username,
 		Email:    body.Email,
 		Password: string(hash),
+		Phone:    body.Phone,
+		Nik:      body.Nik,
 	}
 
 	_, err = repository.CreateUser(user)
@@ -68,6 +69,9 @@ func Register(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "User created successfully",
+		"email":   user.Email,
+		"phone":   user.Phone,
+		"nik":     user.Nik,
 	})
 }
 

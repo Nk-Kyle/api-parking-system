@@ -27,5 +27,7 @@ func ConnectStorage() {
 	if err != nil {
 		log.Println("Error connecting to GCS")
 		log.Println(err)
+	} else {
+		log.Println("Connected to GCS")
 	}
 }

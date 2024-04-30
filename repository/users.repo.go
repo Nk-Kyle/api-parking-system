@@ -24,10 +24,14 @@ func CreateUser(user *models.User) (*mongo.InsertOneResult, error) {
 	return result, nil
 }
 
-func GetUserByEmail(email string) (*models.User, error) {
+func GetUserByEmailorNik(email string, nik string) (*models.User, error) {
 	var user *models.User
 
-	filter := bson.M{"email": email}
+	filter := bson.M{"$or": []bson.M{
+		{"email": email},
+		{"nik": nik},
+	}}
+
 	options := options.FindOne().SetSort(bson.M{"created_at": -1})
 	err := mongodb.UserCol.FindOne(mongodb.Context, filter, options).Decode(&user)
 
