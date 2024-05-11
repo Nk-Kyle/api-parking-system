@@ -1,10 +1,8 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
 type Vehicle struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	PlateNumber string             `bson:"plate_number,omitempty" json:"plate_number,omitempty"`
-	ParkingLog  []ParkingLog       `bson:"parking_log,omitempty" json:"parking_log,omitempty"`
+	PlateNumber string       `bson:"plate_number" json:"plate_number"`
+	Type        string       `bson:"type" json:"type"`
+	ParkingLog  []ParkingLog `bson:"parking_log" json:"parking_log"`
 	Timestamps
 }

@@ -4,10 +4,10 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type User struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Email    string             `bson:"email,omitempty" json:"email,omitempty"`
-	Password string             `bson:"password,omitempty" json:"password,omitempty"`
-	Phone    string             `bson:"phone,omitempty" json:"phone,omitempty"`
-	Nik      string             `bson:"nik,omitempty" json:"nik,omitempty"`
-	Invoices []Invoice          `bson:"invoices,omitempty" json:"invoices,omitempty"`
+	Email    string             `bson:"email" json:"email"`
+	Password string             `bson:"password" json:"password"`
+	Phone    string             `bson:"phone" json:"phone"`
+	Nik      string             `bson:"nik" json:"nik"`
+	Vehicles []Vehicle          `bson:"vehicles" json:"vehicles"`
 	Timestamps
 }
