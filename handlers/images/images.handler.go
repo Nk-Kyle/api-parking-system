@@ -30,7 +30,6 @@ func Upload(c *gin.Context) {
 		Client:     gcs.StorageClient,
 		ProjectID:  os.Getenv("GCS_PROJECT_ID"),
 		BucketName: os.Getenv("GCS_BUCKET_NAME"),
-		UploadPath: os.Getenv("GCS_UPLOAD_PATH"),
 	}
 
 	blob, err := file.Open()

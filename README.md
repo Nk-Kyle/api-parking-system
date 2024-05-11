@@ -14,7 +14,6 @@ There are multiple environment variables that need to be setup in .env files
 2. Google Cloud Storage
     - GCS_PROJECT_ID : The Project ID of GCP being used
     - GCS_BUCKET_NAME : The name of the bucket
-    - GCS_UPLOAD_PATH : Path where images will be stored
 3. Environment:
     - ENV: Set DEV for development environment
     - GOOGLE_APPLICATION_CREDENTIALS_DEV : Used for authorization to GCS with service account key, fill in service account .json file location
