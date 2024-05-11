@@ -43,3 +43,34 @@ func GetUserByEmailorNik(email string, nik string) (*models.User, error) {
 
 	return user, nil
 }
+
+func GetUserByEmail(email string) (*models.User, error) {
+	var user *models.User
+
+	filter := bson.M{"email": email}
+	options := options.FindOne()
+	err := mongodb.UserCol.FindOne(mongodb.Context, filter, options).Decode(&user)
+
+	if err == mongo.ErrNoDocuments {
+		return nil, errors.New("User not found")
+	} else if err != nil {
+		return nil, errors.Wrap(err, "Error querying MongoDB")
+	}
+
+	return user, nil
+}
+
+func UpdateUser(user *models.User) (*mongo.UpdateResult, error) {
+	user.UpdatedAt = time.Now()
+
+	filter := bson.M{"_id": user.ID}
+	update := bson.M{"$set": user}
+
+	result, err := mongodb.UserCol.UpdateOne(mongodb.Context, filter, update)
+
+	if err != nil {
+		return nil, errors.Wrap(err, "Error updating user")
+	}
+
+	return result, nil
+}

@@ -4,6 +4,9 @@ import (
 	"api-parking-system/gcs"
 	auth_handler "api-parking-system/handlers/auth"
 	"api-parking-system/handlers/images"
+	user_handler "api-parking-system/handlers/user"
+	vehicle_handler "api-parking-system/handlers/vehicle"
+	"api-parking-system/middleware"
 	"api-parking-system/mongodb"
 	"api-parking-system/utils"
 	"net/http"
@@ -40,8 +43,20 @@ func main() {
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/register", auth_handler.Register)
-		auth.POST("/login", auth_handler.Login)
+		auth.POST("/register/", auth_handler.Register)
+		auth.POST("/login/", auth_handler.Login)
+	}
+
+	user := router.Group("/user")
+	user.Use(middleware.AuthMiddleware())
+	{
+		user.GET("/profile", user_handler.GetUser)
+	}
+
+	vehicle := router.Group("/vehicle")
+	vehicle.Use(middleware.AuthMiddleware())
+	{
+		vehicle.POST("/register/", vehicle_handler.RegisterNewVehicle)
 	}
 
 	router.Run(":8080")
