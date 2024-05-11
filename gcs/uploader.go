@@ -23,7 +23,7 @@ func (c *FileUploader) UploadFile(file multipart.File, object string) (string, e
 	defer cancel()
 
 	// use current timestamp as object name + random string
-	object = object + strconv.FormatInt(time.Now().Unix(), 10) + utils.GenerateRandomString(5)
+	object = object + "-" + strconv.FormatInt(time.Now().Unix(), 10) + utils.GenerateRandomString(5)
 	wc := c.Client.Bucket(c.BucketName).Object(object).NewWriter(ctx)
 
 	if _, err := io.Copy(wc, file); err != nil {
@@ -34,5 +34,5 @@ func (c *FileUploader) UploadFile(file multipart.File, object string) (string, e
 		return "", err
 	}
 
-	return wc.Attrs().MediaLink, nil
+	return "https://storage.googleapis.com/" + c.BucketName + "/" + object, nil
 }
