@@ -6,6 +6,7 @@ import (
 	"api-parking-system/repository"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +23,7 @@ func RegisterNewVehicle(c *gin.Context) {
 
 	body.PlateNumber = strings.ReplaceAll(body.PlateNumber, " ", "")
 	// Check if vehicle has been registered
-	vehicle, err := repository.GetVehicleByPlateNumber(body.PlateNumber)
+	user, err := repository.GetUserByPlateNumber(body.PlateNumber)
 	if err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Vehicle already registered",
@@ -30,7 +31,7 @@ func RegisterNewVehicle(c *gin.Context) {
 		return
 	}
 
-	if vehicle != nil {
+	if user != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Vehicle already registered",
 		})
@@ -38,7 +39,7 @@ func RegisterNewVehicle(c *gin.Context) {
 	}
 
 	// Get user by email
-	user, err := repository.GetUserByEmail(c.GetString("email"))
+	user, err = repository.GetUserByEmail(c.GetString("email"))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -48,11 +49,13 @@ func RegisterNewVehicle(c *gin.Context) {
 	}
 
 	// Set vehicle data
-	vehicle = &models.Vehicle{
+	vehicle := &models.Vehicle{
 		PlateNumber: body.PlateNumber,
 		Type:        body.Type,
 		ParkingLog:  []models.ParkingLog{},
 	}
+	vehicle.CreatedAt = time.Now()
+	vehicle.UpdatedAt = time.Now()
 
 	// Add vehicle to user
 	user.Vehicles = append(user.Vehicles, *vehicle)
@@ -70,6 +73,5 @@ func RegisterNewVehicle(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Vehicle registered successfully",
 	})
-	return
 
 }

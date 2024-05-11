@@ -54,9 +54,9 @@ func main() {
 	}
 
 	vehicle := router.Group("/vehicle")
-	vehicle.Use(middleware.AuthMiddleware())
 	{
-		vehicle.POST("/register/", vehicle_handler.RegisterNewVehicle)
+		vehicle.POST("/register/", middleware.AuthMiddleware(), vehicle_handler.RegisterNewVehicle)
+		vehicle.POST("/action/", vehicle_handler.VehicleAction)
 	}
 
 	router.Run(":8080")
