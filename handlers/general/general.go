@@ -32,7 +32,7 @@ func Info(c *gin.Context) {
 			})
 			return
 		}
-		date := global.Date.UTC().Format("2006-01-02")
+		date := global.Date.UTC().Format("2006/01/02")
 		dataMap[date] = global
 	}
 
@@ -47,11 +47,10 @@ func Info(c *gin.Context) {
 	maxDuration := 0
 
 	for date := startDate; date.Before(endDate) || date.Equal(endDate); date = date.AddDate(0, 0, 1) {
-		dateStr := date.Format("2006-01-02")
+		dateStr := date.Format("2006/01/02")
 		dates = append(dates, dateStr)
 		if data, ok := dataMap[dateStr]; ok {
 			billables = append(billables, data.Billable)
-			println(data.Billable)
 			vehicleCount[0] += float64(data.Motor)
 			vehicleCount[1] += float64(data.Mobil)
 			vehicleCount[2] += float64(data.Truk)
