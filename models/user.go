@@ -9,5 +9,6 @@ type User struct {
 	Phone    string             `bson:"phone" json:"phone"`
 	Nik      string             `bson:"nik" json:"nik"`
 	Vehicles []Vehicle          `bson:"vehicles" json:"vehicles"`
+	Invoices []Invoice          `bson:"invoices" json:"invoices"`
 	Timestamps
 }

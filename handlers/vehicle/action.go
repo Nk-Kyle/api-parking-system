@@ -12,6 +12,7 @@ import (
 
 func VehicleAction(c *gin.Context) {
 	var body payload.VehicleActionRequest
+	var parkingLog models.ParkingLog
 
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(400, gin.H{
@@ -42,7 +43,7 @@ func VehicleAction(c *gin.Context) {
 
 	// Get latest ParkingLog
 	if len(vehicle.ParkingLog) > 0 {
-		parkingLog := vehicle.ParkingLog[len(vehicle.ParkingLog)-1]
+		parkingLog = vehicle.ParkingLog[len(vehicle.ParkingLog)-1]
 
 		if parkingLog.ImageURL == body.ImageUrl {
 			c.JSON(400, gin.H{
@@ -73,9 +74,61 @@ func VehicleAction(c *gin.Context) {
 		return
 	}
 
+	if newParkingLog.State == models.Out {
+		err = ProcessVehicleOut(*user, parkingLog, *newParkingLog, *vehicle)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+	}
+
 	c.JSON(200, gin.H{
 		"message": "Vehicle action success",
 		"state":   state,
 	})
 
+}
+
+func ProcessVehicleOut(user models.User, parkingLog models.ParkingLog, newParkingLog models.ParkingLog, vehicle models.Vehicle) error {
+	/*
+		Precondition: parkingLog.State == models.Out, parkingLog.ImageURL == body.ImageUrl
+		Postcondition: Add new invoice to user
+	*/
+
+	// Calculate duration
+	duration := int(newParkingLog.CreatedAt.Sub(parkingLog.CreatedAt).Minutes())
+
+	// Calculate parking fee based on type
+	var fee int
+	switch vehicle.Type {
+	case "Motor":
+		fee = duration * 40
+	case "Mobil":
+		fee = duration * 80
+	case "Truk":
+		fee = duration * 150
+	case "Bus":
+		fee = duration * 200
+	}
+
+	// Create a new Invoice
+	invoice := &models.Invoice{
+		PlateNumber: vehicle.PlateNumber,
+		Duration:    int(duration),
+		Amount:      int(fee),
+		IsPaid:      false,
+	}
+	invoice.CreatedAt = time.Now()
+	invoice.UpdatedAt = time.Now()
+
+	// Append new invoice to user
+	_, err := repository.AddInvoice(invoice, user)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
