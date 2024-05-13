@@ -141,7 +141,7 @@ func ProcessVehicleOut(user models.User, parkingLog models.ParkingLog, newParkin
 		currentDate := time.Now()
 		global = &models.Global{
 			Date:          time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 0, 0, 0, 0, time.UTC),
-			Billable:      int(duration * cost),
+			Billable:      0,
 			Transactions:  0,
 			TotalDuration: 0,
 			MinDuration:   duration,
@@ -170,6 +170,8 @@ func ProcessVehicleOut(user models.User, parkingLog models.ParkingLog, newParkin
 	if global.MaxDuration < duration {
 		global.MaxDuration = duration
 	}
+
+	global.Billable += int(duration * cost)
 
 	_, err = repository.UpdateOrCreateGlobal(global)
 
