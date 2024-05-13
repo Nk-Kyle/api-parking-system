@@ -3,7 +3,6 @@ package repository
 import (
 	"api-parking-system/models"
 	"api-parking-system/mongodb"
-	"fmt"
 
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,7 +12,6 @@ import (
 func AddInvoice(invoice *models.Invoice, user models.User) (*mongo.UpdateResult, error) {
 	filter := bson.M{"_id": user.ID}
 	update := bson.M{"$push": bson.M{"invoices": invoice}}
-	fmt.Print(invoice)
 
 	result, err := mongodb.UserCol.UpdateOne(mongodb.Context, filter, update)
 

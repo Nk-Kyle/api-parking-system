@@ -3,6 +3,7 @@ package main
 import (
 	"api-parking-system/gcs"
 	auth_handler "api-parking-system/handlers/auth"
+	general_handler "api-parking-system/handlers/general"
 	"api-parking-system/handlers/images"
 	user_handler "api-parking-system/handlers/user"
 	vehicle_handler "api-parking-system/handlers/vehicle"
@@ -40,6 +41,7 @@ func main() {
 	})
 
 	router.POST("/upload", images.Upload)
+	router.GET("/info", general_handler.Info)
 
 	auth := router.Group("/auth")
 	{

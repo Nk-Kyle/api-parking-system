@@ -42,3 +42,16 @@ func UpdateOrCreateGlobal(global *models.Global) (*mongo.UpdateResult, error) {
 
 	return result, nil
 }
+
+func GetThisWeekGlobal() (*mongo.Cursor, error) {
+	startDate := time.Now().AddDate(0, 0, -7)
+
+	filter := bson.M{
+		"date": bson.M{
+			"$gte": startDate,
+		},
+	}
+
+	res, err := mongodb.GlobalCol.Find(mongodb.Context, filter)
+	return res, err
+}
