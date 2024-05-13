@@ -82,7 +82,6 @@ func VehicleAction(c *gin.Context) {
 			})
 			return
 		}
-
 	}
 
 	c.JSON(200, gin.H{
@@ -102,24 +101,26 @@ func ProcessVehicleOut(user models.User, parkingLog models.ParkingLog, newParkin
 	duration := int(newParkingLog.CreatedAt.Sub(parkingLog.CreatedAt).Minutes())
 
 	// Calculate parking fee based on type
-	var fee int
+	var cost int
 	switch vehicle.Type {
 	case "Motor":
-		fee = duration * 40
+		cost = 40
 	case "Mobil":
-		fee = duration * 80
+		cost = 80
 	case "Truk":
-		fee = duration * 150
+		cost = 150
 	case "Bus":
-		fee = duration * 200
+		cost = 200
 	}
 
 	// Create a new Invoice
 	invoice := &models.Invoice{
 		PlateNumber: vehicle.PlateNumber,
 		Duration:    int(duration),
-		Amount:      int(fee),
+		Amount:      int(duration * cost),
 		IsPaid:      false,
+		PPM:         cost,
+		Type:        vehicle.Type,
 	}
 	invoice.CreatedAt = time.Now()
 	invoice.UpdatedAt = time.Now()
@@ -130,5 +131,51 @@ func ProcessVehicleOut(user models.User, parkingLog models.ParkingLog, newParkin
 	if err != nil {
 		return err
 	}
+
+	// Get global
+	global, err := repository.GetGlobal()
+	if err != nil {
+		return err
+	}
+	if global == nil {
+		currentDate := time.Now()
+		global = &models.Global{
+			Date:          time.Date(currentDate.Year(), currentDate.Month(), currentDate.Day(), 0, 0, 0, 0, time.UTC),
+			Billable:      int(duration * cost),
+			Transactions:  0,
+			TotalDuration: 0,
+			MinDuration:   duration,
+			MaxDuration:   duration,
+		}
+	}
+
+	// Update Stats
+	switch vehicle.Type {
+	case "Motor":
+		global.Motor += 1
+	case "Mobil":
+		global.Mobil += 1
+	case "Truk":
+		global.Truk += 1
+	case "Bus":
+		global.Bus += 1
+	}
+
+	global.Transactions += 1
+	global.TotalDuration += duration
+
+	if global.MinDuration > duration {
+		global.MinDuration = duration
+	}
+	if global.MaxDuration < duration {
+		global.MaxDuration = duration
+	}
+
+	_, err = repository.UpdateOrCreateGlobal(global)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
