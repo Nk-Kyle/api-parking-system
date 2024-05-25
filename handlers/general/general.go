@@ -75,6 +75,18 @@ func Info(c *gin.Context) {
 		vehiclePercentages = append(vehiclePercentages, percentage)
 	}
 
+	// If the minDuration is still the initial value, set it to 0
+	if minDuration == math.MaxInt64 {
+		minDuration = 0
+	}
+
+	// If any vehiclePercentages are NaN, set them to 0
+	for i, percentage := range vehiclePercentages {
+		if math.IsNaN(percentage) {
+			vehiclePercentages[i] = 0
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"stats": gin.H{
 			"dates":  dates,
