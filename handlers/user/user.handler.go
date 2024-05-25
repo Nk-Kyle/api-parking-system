@@ -44,6 +44,10 @@ func GetUser(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to get User Data"})
 			return
 		}
+		// Check if interface is nil
+		if result["invoices"] == nil {
+			continue
+		}
 		invoices := result["invoices"].(primitive.A)
 		for _, invoice := range invoices {
 			invoiceMap := invoice.(primitive.M)
@@ -111,6 +115,22 @@ func GetUser(c *gin.Context) {
 			route = append(route, ele)
 		}
 
+	}
+
+	// Check images is empty
+	if len(images) == 0 {
+		images = append(images, "https://placehold.jp/6a6d8a/ffffff/800x600.jpg?text=No%20Data", "https://placehold.jp/6a6d8a/ffffff/800x600.jpg?text=No%20Data")
+	}
+
+	if len(route) == 0 {
+		for i := 0; i < 3; i++ {
+			ele := map[string]string{
+				"title":       "-",
+				"description": "-",
+				"img":         "-",
+			}
+			route = append(route, ele)
+		}
 	}
 
 	// Extract keys (dates) from the map and sort
