@@ -87,6 +87,12 @@ func Info(c *gin.Context) {
 		}
 	}
 
+	avgDuration := "0"
+
+	if vehicles != 0 {
+		avgDuration = strconv.FormatFloat(float64(totalDuration)/float64(vehicles), 'f', 2, 64)
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"stats": gin.H{
 			"dates":  dates,
@@ -99,7 +105,7 @@ func Info(c *gin.Context) {
 		"numStation":     "1",
 		"numVehicle":     strconv.Itoa(vehicles),
 		"numTransaction": strconv.Itoa(vehicles),
-		"avgDuration":    strconv.FormatFloat(float64(totalDuration)/float64(vehicles), 'f', 2, 64),
+		"avgDuration":    avgDuration,
 		"minDuration":    strconv.Itoa(minDuration),
 		"maxDuration":    strconv.Itoa(maxDuration),
 	})

@@ -147,6 +147,11 @@ func GetUser(c *gin.Context) {
 		amounts = append(amounts, amountPerDate[date])
 	}
 
+	// If the minDuration is still the initial value, set it to 0
+	if minDuration == math.MaxInt64 {
+		minDuration = 0
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"stats": gin.H{
 			"dates":  dates,
