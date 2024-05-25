@@ -30,9 +30,12 @@ func main() {
 	defer mongodb.Client.Disconnect(mongodb.Context)
 	defer gcs.StorageClient.Close()
 
-	// Start the server
+	// Configure CORS middleware
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowHeaders = append(config.AllowHeaders, "Authorization") // Allow Authorization header
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(cors.New(config))
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -53,6 +56,7 @@ func main() {
 	user.Use(middleware.AuthMiddleware())
 	{
 		user.GET("/profile", user_handler.GetUser)
+		user.GET("/images", user_handler.GetUserImages)
 	}
 
 	vehicle := router.Group("/vehicle")

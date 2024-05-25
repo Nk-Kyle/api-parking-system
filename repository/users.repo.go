@@ -74,3 +74,43 @@ func UpdateUser(user *models.User) (*mongo.UpdateResult, error) {
 
 	return result, nil
 }
+
+func GetThisWeekUser(email string) (*mongo.Cursor, error) {
+	startDate := time.Now().AddDate(0, 0, -7)
+
+	// Define the aggregation pipeline to filter and project only the invoices
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: bson.M{"email": email}}},
+		{{Key: "$project", Value: bson.M{
+			"invoices": bson.M{
+				"$filter": bson.M{
+					"input": "$invoices",
+					"as":    "invoice",
+					"cond":  bson.M{"$gte": bson.A{"$$invoice.timestamps.created_at", startDate}},
+				},
+			},
+			"vehicle": bson.M{"$first": "$vehicles"},
+		}}},
+	}
+
+	// Perform the aggregation
+	res, err := mongodb.UserCol.Aggregate(mongodb.Context, pipeline)
+	return res, err
+}
+
+func GetUserImages(email string) (*mongo.Cursor, error) {
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: bson.M{"email": email}}},
+		{{Key: "$project", Value: bson.M{
+			"images": bson.M{
+				"$arrayElemAt": bson.A{
+					"$vehicles.parking_log.image_url", 0,
+				},
+			}}},
+		},
+	}
+
+	res, err := mongodb.UserCol.Aggregate(mongodb.Context, pipeline)
+	return res, err
+}
