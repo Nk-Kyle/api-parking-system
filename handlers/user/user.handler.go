@@ -38,6 +38,8 @@ func GetUser(c *gin.Context) {
 	minDuration := math.MaxInt64
 	maxDuration := 0
 
+	loc, _ := time.LoadLocation("Asia/Jakarta") // load Jakarta timezone
+
 	for res.Next(context.Background()) {
 		var result bson.M
 		if err := res.Decode(&result); err != nil {
@@ -51,7 +53,7 @@ func GetUser(c *gin.Context) {
 		invoices := result["invoices"].(primitive.A)
 		for _, invoice := range invoices {
 			invoiceMap := invoice.(primitive.M)
-			invoiceDate := time.Unix(int64(invoiceMap["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).Format("2006/01/02")
+			invoiceDate := time.Unix(int64(invoiceMap["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).In(loc).Format("2006/01/02")
 			amountPerDate[invoiceDate] += int64(invoiceMap["amount"].(int32))
 
 			duration := int(invoiceMap["duration"].(int32))
@@ -77,14 +79,14 @@ func GetUser(c *gin.Context) {
 		if last_ele["state"].(string) == "in" {
 			// Only give last data
 			images = append(images, image_url, placeholder)
-			time_in = time.Unix(int64(last_ele["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).Format("15:04")
+			time_in = time.Unix(int64(last_ele["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).In(loc).Format("15:04")
 		} else if len(parking_log) > 0 {
 			second_to_last_ele := parking_log[len(parking_log)-2].(primitive.M)
 			image_url_2 := second_to_last_ele["image_url"].(string)
 			images = append(images, image_url, image_url_2)
 
-			time_in = time.Unix(int64(second_to_last_ele["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).Format("15:04")
-			time_out = time.Unix(int64(last_ele["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).Format("15:04")
+			time_in = time.Unix(int64(second_to_last_ele["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).In(loc).Format("15:04")
+			time_out = time.Unix(int64(last_ele["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).In(loc).Format("15:04")
 		} else {
 			images = append(images, placeholder, placeholder)
 		}
@@ -100,7 +102,7 @@ func GetUser(c *gin.Context) {
 			log := log.(primitive.M)
 			ele := map[string]string{
 				"title":       "Main Parking Station",
-				"description": time.Unix(int64(log["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).Format("2006/01/02"),
+				"description": time.Unix(int64(log["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).In(loc).Format("2006/01/02"),
 				"img":         log["image_url"].(string),
 			}
 			route = append(route, ele)
