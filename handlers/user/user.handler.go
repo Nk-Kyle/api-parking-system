@@ -35,8 +35,10 @@ func GetUser(c *gin.Context) {
 
 	time_in := "-"
 	time_out := "-"
+	plate_number := "-"
 	minDuration := math.MaxInt64
 	maxDuration := 0
+	billable := 0
 
 	loc, _ := time.LoadLocation("Asia/Jakarta") // load Jakarta timezone
 
@@ -55,6 +57,7 @@ func GetUser(c *gin.Context) {
 			invoiceMap := invoice.(primitive.M)
 			invoiceDate := time.Unix(int64(invoiceMap["timestamps"].(primitive.M)["created_at"].(primitive.DateTime)/1000), 0).In(loc).Format("2006/01/02")
 			amountPerDate[invoiceDate] += int64(invoiceMap["amount"].(int32))
+			billable += int(invoiceMap["amount"].(int32))
 
 			duration := int(invoiceMap["duration"].(int32))
 
@@ -67,6 +70,11 @@ func GetUser(c *gin.Context) {
 		}
 
 		vehicle := result["vehicle"].(primitive.M)
+
+		// Get vehicle plate number
+		plate_number = vehicle["plate_number"].(string)
+		vehicle_type := vehicle["type"].(string)
+		plate_number = plate_number + " (" + vehicle_type + ")"
 		parking_log := vehicle["parking_log"].(primitive.A)
 
 		if len(parking_log) == 0 {
@@ -165,6 +173,8 @@ func GetUser(c *gin.Context) {
 		"minDuration": strconv.Itoa(minDuration),
 		"maxDuration": strconv.Itoa(maxDuration),
 		"route":       route,
+		"vehicle":     plate_number,
+		"billable":    billable,
 	})
 }
 
